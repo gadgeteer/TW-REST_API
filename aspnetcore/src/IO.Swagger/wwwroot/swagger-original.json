@@ -1,0 +1,413 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "ThingWorx Core REST API",
+    "description" : "ThingWorx Core REST API",
+    "version" : "0.3.4-oas3"
+  },
+  "servers" : [ {
+    "url" : "/"
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ]
+  }, {
+    "ThingWorxAppKeyHeader" : [ ]
+  }, {
+    "ThingWorxAppKeyQuery" : [ ]
+  } ],
+  "paths" : {
+    "/Resources/EntityServices/Services/{serviceName}" : {
+      "post" : {
+        "description" : "Create a new Thing or new Thing Template based on an existing Thing Template\nCreate a new Data Shape or new Thing Shape",
+        "parameters" : [ {
+          "name" : "serviceName",
+          "in" : "path",
+          "description" : "Service to be called",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CreateThing", "CreateThingTemplate", "CreateDataShape", "CreateThingShape" ]
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Name of new entity and name of base Thing Template when creating new Things and Thing Templates",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/newThing"
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/newThing"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Entity successfully created"
+          },
+          "404" : {
+            "description" : "Specified Thing Template does not exist"
+          },
+          "406" : {
+            "description" : "Specified name already exists"
+          }
+        }
+      }
+    },
+    "/Things/{thingName}/Services/{ServiceName}" : {
+      "post" : {
+        "description" : "Restart and Enable Thing after creation or modification",
+        "parameters" : [ {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing to be updated",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "ServiceName",
+          "in" : "path",
+          "description" : "Restart or Enable an existing Thing",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "EnableThing", "RestartThing" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Thing state Successfully updated"
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          }
+        }
+      }
+    },
+    "/Things" : {
+      "get" : {
+        "summary" : "Returns all visible Things",
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response"
+          }
+        }
+      }
+    },
+    "/Things/{thingName}/Properties/{propertyName}" : {
+      "get" : {
+        "description" : "Return current property value on specified Thing",
+        "parameters" : [ {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing to use",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "propertyName",
+          "in" : "path",
+          "description" : "Existing Property to use",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Property Successfully retrieved"
+          },
+          "404" : {
+            "description" : "Unknown Thing or Property"
+          }
+        }
+      },
+      "put" : {
+        "description" : "Set property value on specified Thing",
+        "parameters" : [ {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing to use",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "propertyName",
+          "in" : "path",
+          "description" : "Existing Property to use",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/propertyStringValue"
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/propertyStringValue"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Property Successfully Set"
+          },
+          "404" : {
+            "description" : "Unknown Thing or Property"
+          }
+        }
+      }
+    },
+    "/Things/{thingName}/Services/AddEventDefinition" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing to use",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/newEvent"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Event successfully added"
+          }
+        }
+      }
+    },
+    "/Things/{thingName}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing to query",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Succesful Response"
+          }
+        }
+      },
+      "delete" : {
+        "description" : "Delete an existing Thing",
+        "parameters" : [ {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing to be deleted",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "Definition generated from Swagger Inspector"
+          }
+        }
+      }
+    },
+    "/{entity}/{thingName}/Services/{serviceName}" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "entity",
+          "in" : "path",
+          "description" : "Type of ThingWorx entity to perform operation on",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "Thing", "ThingTemplate", "ThingShape", "DataShape" ]
+          }
+        }, {
+          "name" : "thingName",
+          "in" : "path",
+          "description" : "Existing Thing",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "serviceName",
+          "in" : "path",
+          "description" : "Name of service to execute",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/property"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Service successfully executed"
+          }
+        }
+      }
+    },
+    "/ExtensionPackageUploader" : {
+      "post" : {
+        "description" : "Upload exported ThingWorx entities",
+        "parameters" : [ {
+          "name" : "X-XSRF-TOKEN",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "TWX-XSRF-TOKEN-VALUE"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/body"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "File successfully uploaded"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "newEvent" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "dataShape" : {
+            "type" : "string"
+          }
+        }
+      },
+      "propertyStringValue" : {
+        "properties" : {
+          "propertyName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "propertyNumberValue" : {
+        "properties" : {
+          "propertyName" : {
+            "type" : "number"
+          }
+        }
+      },
+      "newThing" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "thingTemplateName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "property" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "body" : {
+        "type" : "object",
+        "properties" : {
+          "upload" : {
+            "type" : "string",
+            "description" : "The file to be imported",
+            "format" : "binary"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "type" : "http",
+        "scheme" : "basic"
+      },
+      "ThingWorxAppKeyHeader" : {
+        "type" : "apiKey",
+        "name" : "appKey",
+        "in" : "header"
+      },
+      "ThingWorxAppKeyQuery" : {
+        "type" : "apiKey",
+        "name" : "appKey",
+        "in" : "query"
+      }
+    }
+  }
+}
